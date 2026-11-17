@@ -6,21 +6,21 @@ pipeline {
         stage('Test Lab2.1') {
             steps {
                 echo 'Testing Lab2.1'
-                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest lab2.1/test_trainings.py -v'
+                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest Lab2/lab2.1/test_trainings.py -v'
             }
         }
 
         stage('Test Training Service') {
             steps {
                 echo 'Testing Training Service'
-                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest lab2.2/serv1/test_trservice.py -v'
+                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest Lab2/lab2.2/serv1/test_trservice.py -v'
             }
         }
 
         stage('Test Clients Service') {
             steps {
                 echo 'Testing Clients Service'
-                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest lab2.2/serv2/test_clients.py -v'
+                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest Lab2/lab2.2/serv2/test_clients.py -v'
             }
         }
     }
