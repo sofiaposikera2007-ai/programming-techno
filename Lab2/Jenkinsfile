@@ -1,0 +1,36 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Test Lab2.1') {
+            steps {
+                echo 'Testing Lab2.1'
+                bat 'python -m pytest lab2.1/test_trainings.py -v'
+            }
+        }
+
+        stage('Test Training Service') {
+            steps {
+                echo 'Testing Training Service'
+                bat 'python -m pytest lab2.2/serv1/test_trservice.py -v'
+            }
+        }
+
+        stage('Test Clients Service') {
+            steps {
+                echo 'Testing Clients Service'
+                bat 'python -m pytest lab2.2/serv2/test_clients.py -v'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'All tests completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
