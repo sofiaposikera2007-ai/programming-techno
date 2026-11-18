@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Preparing build'
-                bat 'python -m compileall -q Lab2'
+                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m compileall -q Lab2'
             }
         }
 
