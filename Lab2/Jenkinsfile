@@ -1,6 +1,21 @@
 
 pipeline {
     agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Getting project from Git'
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Preparing build'
+                bat 'python -m compileall -q Lab2'
+            }
+        }
 
     stages {
         stage('Test Lab2.1') {
@@ -26,6 +41,9 @@ pipeline {
     }
 
     post {
+         always {
+            echo 'Pipeline execution finished.'
+        }
         success {
             echo 'All tests completed successfully!'
         }
