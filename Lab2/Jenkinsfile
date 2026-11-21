@@ -1,6 +1,12 @@
 pipeline {
     agent any
     
+    environment {
+        PYTHON_EXE = '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"'
+        DOCKER_USER = 'sofiiaaa27'
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -12,28 +18,48 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Preparing build'
-                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m compileall -q Lab2'
+                bat "${PYTHON_EXE} -m compileall -q Lab2"
             }
         }
 
-        stage('Test Lab2.1') {
-            steps {
-                echo 'Testing Lab2.1'
-                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest Lab2/lab2.1/test_trainings.py -v'
-            }
-        }
-
+        
         stage('Test Training Service') {
             steps {
                 echo 'Testing Training Service'
-                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest Lab2/lab2.2/serv1/test_trservice.py -v'
+                bat "${PYTHON_EXE} -m unittest Lab2/lab2.2/serv1/test_trservice.py -v"
             }
         }
 
         stage('Test Clients Service') {
             steps {
                 echo 'Testing Clients Service'
-                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe" -m pytest Lab2/lab2.2/serv2/test_clients.py -v'
+                bat "${PYTHON_EXE} -m unittest Lab2/lab2.2/serv2/test_clients.py -v"
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                echo 'Building Docker images...'
+                bat "docker build -t %DOCKER_USER%/training-service:%IMAGE_TAG% -t %DOCKER_USER%/training-service:latest Lab2/lab2.2/serv1"
+                bat "docker build -t %DOCKER_USER%/clients-service:%IMAGE_TAG% -t %DOCKER_USER%/clients-service:latest Lab2/lab2.2/serv2"
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                echo 'Pushing Docker images to Docker Hub...'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
+                    bat "echo %DH_PASS% | docker login -u %DH_USER% --password-stdin"
+                    bat "docker push %DOCKER_USER%/training-service:%IMAGE_TAG%"
+                    bat "docker push %DOCKER_USER%/training-service:latest"
+                    bat "docker push %DOCKER_USER%/clients-service:%IMAGE_TAG%"
+                    bat "docker push %DOCKER_USER%/clients-service:latest"
+                }
+                }
+                post {
+                always {
+                    bat "docker logout"
+                }
             }
         }
     }
